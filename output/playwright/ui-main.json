@@ -1,0 +1,26 @@
+{
+  "data": {
+    "canvas": {
+      "x": 490,
+      "y": 253,
+      "width": 800,
+      "height": 600
+    },
+    "chart": {
+      "x": 1167,
+      "y": 943,
+      "width": 236,
+      "height": 150
+    },
+    "recording": {
+      "x": 1167,
+      "y": 856,
+      "width": 236,
+      "height": 209
+    },
+    "chartOpen": false,
+    "canvasChartOverlap": false,
+    "canvasRecordingOverlap": false
+  },
+  "errors": []
+}

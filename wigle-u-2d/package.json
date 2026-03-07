@@ -1,0 +1,16 @@
+{
+  "name": "250929",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"기본 테스트는 Playwright를 사용하세요\"",
+    "test:playwright": "playwright test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.55.1"
+  }
+}

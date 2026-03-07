@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>wigle-u hierarchy</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2308141f'/%3E%3Cpath d='M16 44V18h8v18h16v8H16Z' fill='%2386e7d4'/%3E%3Ccircle cx='44' cy='22' r='8' fill='%23ffcf75'/%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg-0: #08111f;
+        --bg-1: #0e1a2d;
+        --bg-2: #13243b;
+        --panel: rgba(8, 15, 27, 0.78);
+        --panel-strong: rgba(10, 19, 34, 0.92);
+        --line: rgba(164, 202, 255, 0.16);
+        --line-strong: rgba(255, 214, 136, 0.3);
+        --text: #edf5ff;
+        --muted: rgba(237, 245, 255, 0.64);
+        --accent: #86e7d4;
+        --accent-warm: #ffcf75;
+        --accent-echo: #b5a1ff;
+        --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+        --radius-xl: 28px;
+        --radius-lg: 20px;
+        --radius-md: 14px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+      }
+
+      body {
+        overflow: hidden;
+        user-select: none;
+        color: var(--text);
+        font-family: Aptos, "Segoe UI Variable", "Trebuchet MS", sans-serif;
+        background:
+          radial-gradient(circle at 20% 20%, rgba(134, 231, 212, 0.14), transparent 26%),
+          radial-gradient(circle at 78% 18%, rgba(181, 161, 255, 0.14), transparent 24%),
+          radial-gradient(circle at 62% 78%, rgba(255, 207, 117, 0.12), transparent 24%),
+          linear-gradient(145deg, #08111f 0%, #0c1729 42%, #101f35 100%);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          radial-gradient(1px 1px at 16% 24%, rgba(255, 255, 255, 0.8), transparent),
+          radial-gradient(1px 1px at 58% 14%, rgba(255, 255, 255, 0.45), transparent),
+          radial-gradient(1.5px 1.5px at 73% 61%, rgba(255, 255, 255, 0.5), transparent),
+          radial-gradient(1px 1px at 34% 76%, rgba(255, 255, 255, 0.35), transparent);
+        opacity: 0.55;
+      }
+
+      .app-shell {
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr);
+        gap: 18px;
+        width: 100vw;
+        height: 100vh;
+        padding: 16px;
+      }
+
+      #controls {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 0;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-xl);
+        background:
+          linear-gradient(180deg, rgba(11, 20, 35, 0.96), rgba(8, 16, 28, 0.86));
+        box-shadow: var(--shadow);
+        overflow-y: auto;
+        overflow-x: hidden;
+        backdrop-filter: blur(18px);
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+
+      #controls.collapsed {
+        transform: translateX(calc(-100% + 56px));
+      }
+
+      #controls::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      #controls::-webkit-scrollbar-thumb {
+        background: rgba(134, 231, 212, 0.24);
+        border-radius: 999px;
+      }
+
+      .toggle-button {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 34px;
+        height: 34px;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: rgba(20, 34, 56, 0.9);
+        color: var(--accent);
+        cursor: pointer;
+        z-index: 10;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+      }
+
+      .toggle-button:hover {
+        transform: scale(1.04);
+        border-color: rgba(134, 231, 212, 0.45);
+      }
+
+      .controls-header {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding-right: 40px;
+      }
+
+      .brand-lockup {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .brand-copy {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .brand-kicker {
+        font-size: 11px;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      .brand-copy h1 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 28px;
+        line-height: 1;
+        font-weight: 600;
+      }
+
+      .brand-summary {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .preset-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .preset-btn,
+      .mode-btn,
+      .speed-btn,
+      .record-btn,
+      select,
+      input[type="number"] {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(17, 29, 47, 0.86);
+        color: var(--text);
+        transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+      }
+
+      .preset-btn,
+      .mode-btn,
+      .speed-btn,
+      .record-btn {
+        cursor: pointer;
+      }
+
+      .preset-btn:hover,
+      .mode-btn:hover,
+      .speed-btn:hover,
+      .record-btn:hover:not(:disabled),
+      select:hover,
+      input[type="number"]:hover {
+        border-color: rgba(134, 231, 212, 0.4);
+        background: rgba(24, 40, 63, 0.95);
+      }
+
+      .preset-btn {
+        padding: 10px 12px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .control-group {
+        display: grid;
+        gap: 10px;
+        padding: 14px;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--line);
+        background: rgba(10, 18, 31, 0.72);
+      }
+
+      .control-group h3 {
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      .control-item {
+        display: grid;
+        gap: 7px;
+      }
+
+      .control-item label {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .control-item input[type="checkbox"] {
+        transform: scale(1.15);
+        accent-color: var(--accent);
+      }
+
+      .slider-container {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 82px;
+        gap: 10px;
+        align-items: center;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+      }
+
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 10px 12px;
+        font-size: 12px;
+      }
+
+      .stage-shell {
+        position: relative;
+        min-width: 0;
+        min-height: 0;
+        border-radius: 32px;
+        border: 1px solid rgba(164, 202, 255, 0.12);
+        background:
+          radial-gradient(circle at top, rgba(255, 207, 117, 0.08), transparent 28%),
+          linear-gradient(180deg, rgba(8, 16, 28, 0.84), rgba(5, 11, 21, 0.98));
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+
+      .stage-shell::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(120deg, rgba(255, 255, 255, 0.04), transparent 22%),
+          linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.02));
+      }
+
+      #canvasContainer {
+        position: absolute;
+        inset: 88px 20px 120px 20px;
+        margin: auto;
+        border-radius: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background:
+          radial-gradient(circle at 50% 50%, rgba(18, 42, 71, 0.35), rgba(5, 8, 14, 0.96));
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+        cursor: crosshair;
+        overflow: visible;
+      }
+
+      #canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 28px;
+      }
+
+      .resize-handle {
+        position: absolute;
+        background: linear-gradient(135deg, var(--accent), var(--accent-echo));
+        opacity: 0.58;
+        border-radius: 999px;
+      }
+
+      .resize-handle:hover {
+        opacity: 1;
+      }
+
+      .resize-handle.right {
+        top: 16px;
+        right: -4px;
+        width: 8px;
+        height: calc(100% - 32px);
+        cursor: ew-resize;
+      }
+
+      .resize-handle.bottom {
+        left: 16px;
+        bottom: -4px;
+        width: calc(100% - 32px);
+        height: 8px;
+        cursor: ns-resize;
+      }
+
+      .resize-handle.corner {
+        right: -6px;
+        bottom: -6px;
+        width: 18px;
+        height: 18px;
+        cursor: nwse-resize;
+      }
+
+      #info {
+        position: absolute;
+        top: 18px;
+        left: 20px;
+        right: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: rgba(6, 13, 24, 0.72);
+        backdrop-filter: blur(14px);
+        z-index: 5;
+      }
+
+      .status-copy {
+        display: grid;
+        gap: 2px;
+      }
+
+      .status-copy strong {
+        font-size: 14px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #fff8e0;
+      }
+
+      .status-copy span {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .status-meters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .status-pill {
+        min-width: 96px;
+        padding: 8px 12px;
+        border-radius: 14px;
+        background: rgba(16, 28, 45, 0.86);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .status-pill label {
+        display: block;
+        color: var(--muted);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        margin-bottom: 4px;
+      }
+
+      .status-pill span {
+        font-size: 22px;
+        line-height: 1;
+        font-weight: 700;
+      }
+
+      .speed-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .speed-controls b {
+        color: var(--muted);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        margin-right: 2px;
+      }
+
+      .speed-btn,
+      .mode-btn {
+        padding: 10px 12px;
+        font-size: 12px;
+      }
+
+      .toolbar-btn {
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(17, 29, 47, 0.86);
+        color: var(--text);
+        cursor: pointer;
+        transition: border-color 0.2s ease, background 0.2s ease;
+      }
+
+      .toolbar-btn:hover {
+        border-color: rgba(134, 231, 212, 0.4);
+        background: rgba(24, 40, 63, 0.95);
+      }
+
+      .toolbar-btn.active {
+        border-color: rgba(134, 231, 212, 0.5);
+        background: rgba(41, 78, 94, 0.72);
+        color: #f5fffc;
+      }
+
+      .speed-btn.active,
+      .mode-btn.active {
+        border-color: rgba(134, 231, 212, 0.5);
+        background: rgba(41, 78, 94, 0.72);
+        color: #f5fffc;
+      }
+
+      .toggle-note {
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(181, 161, 255, 0.08);
+        border: 1px solid rgba(181, 161, 255, 0.18);
+        color: rgba(233, 226, 255, 0.84);
+        font-size: 12px;
+        line-height: 1.4;
+      }
+
+      .overlay-stack {
+        position: absolute;
+        left: 20px;
+        right: 20px;
+        bottom: 8px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 236px;
+        gap: 12px;
+        align-items: end;
+        z-index: 5;
+      }
+
+      .interaction-mode,
+      .recording-controls {
+        position: relative;
+        padding: 14px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: rgba(6, 13, 24, 0.74);
+        backdrop-filter: blur(14px);
+      }
+
+      .interaction-mode {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .interaction-mode > span {
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+      }
+
+      #chart {
+        display: none;
+        height: 92px;
+        padding: 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(11, 22, 38, 0.72);
+      }
+
+      #chart.is-open {
+        display: block;
+      }
+
+      #chartCanvas {
+        width: 100%;
+        height: 100%;
+      }
+
+      .recording-controls {
+        display: grid;
+        gap: 10px;
+      }
+
+      .recording-status {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .recording-status #recordingStatus.recording {
+        color: #ff8585;
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.45;
+        }
+      }
+
+      .record-btn {
+        width: 100%;
+        padding: 10px 12px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .record-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+
+      .record-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .record-actions #captureSnapshot {
+        grid-column: 1 / -1;
+      }
+
+      .recording-options {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .recording-controls.chart-open .recording-options {
+        display: none;
+      }
+
+      .recording-options label {
+        display: grid;
+        gap: 4px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      @media (max-width: 1280px) {
+        .app-shell {
+          grid-template-columns: 300px minmax(0, 1fr);
+        }
+
+        .overlay-stack {
+          grid-template-columns: 1fr;
+        }
+
+        .recording-controls {
+          width: 236px;
+          justify-self: end;
+        }
+      }
+
+      @media (max-width: 980px) {
+        body {
+          overflow: auto;
+        }
+
+        .app-shell {
+          grid-template-columns: 1fr;
+          height: auto;
+          min-height: 100vh;
+        }
+
+        #controls {
+          max-height: none;
+        }
+
+        #controls.collapsed {
+          transform: none;
+        }
+
+        .stage-shell {
+          min-height: 980px;
+        }
+
+        #canvasContainer {
+          inset: 98px 16px 220px 16px;
+        }
+
+        #info {
+          left: 16px;
+          right: 16px;
+        }
+
+        .overlay-stack {
+          left: 16px;
+          right: 16px;
+          bottom: 10px;
+        }
+
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside id="controls">
+        <div class="toggle-button" id="toggleControls">☰</div>
+
+        <div class="controls-header">
+          <div class="brand-lockup">
+            <div class="brand-copy">
+              <span class="brand-kicker">wigle-u / hierarchy</span>
+              <h1>Hierarchy Field</h1>
+            </div>
+            <div class="brand-summary">Hierarchy를 기준으로 보고 만지는 현재 실험 화면.</div>
+          </div>
+
+          <div class="preset-buttons">
+            <button class="preset-btn" id="savePreset">Save Preset</button>
+            <button class="preset-btn" id="loadPreset">Load Preset</button>
+            <button class="preset-btn" id="saveParamsFile">Save JSON</button>
+            <button class="preset-btn" id="loadParamsFile">Load JSON</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h3>Session</h3>
+
+          <div class="control-item">
+            <label for="dynamicsMode">Model Focus</label>
+            <select id="dynamicsMode">
+              <option value="hierarchy" selected>Hierarchy</option>
+              <option value="terrain">Legacy Terrain/Energy</option>
+            </select>
+          </div>
+
+          <div class="control-item">
+            <label for="simulationSize">Simulation Grid</label>
+            <select id="simulationSize">
+              <option value="64">64 × 64</option>
+              <option value="128">128 × 128</option>
+              <option value="256" selected>256 × 256</option>
+              <option value="512">512 × 512</option>
+              <option value="1024">1024 × 1024</option>
+              <option value="2048">2048 × 2048</option>
+            </select>
+          </div>
+
+          <div class="control-item">
+            <label for="layerView">View Layer</label>
+            <select id="layerView">
+              <option value="composite" selected>Composite</option>
+              <option value="energy">Energy</option>
+              <option value="secondary">Unitness</option>
+              <option value="lift">Echo</option>
+              <option value="abSplit">RGB Split</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="control-group" id="hierarchyGroup">
+          <h3>Hierarchy Core</h3>
+
+          <div class="control-item">
+            <label for="hierarchyAlignment">Alignment Tolerance</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="hierarchyAlignment"
+                min="0.02"
+                max="0.5"
+                value="0.12"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="hierarchyAlignmentValue"
+                min="0.02"
+                max="0.5"
+                value="0.12"
+                step="0.001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="unitGain">Unit Gain</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="unitGain"
+                min="0"
+                max="1"
+                value="0.22"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="unitGainValue"
+                min="0"
+                max="1"
+                value="0.22"
+                step="0.001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="unitDecay">Unit Decay</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="unitDecay"
+                min="0"
+                max="0.2"
+                value="0.018"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="unitDecayValue"
+                min="0"
+                max="0.2"
+                value="0.018"
+                step="0.001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="promotionThreshold">Promotion Threshold</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="promotionThreshold"
+                min="0"
+                max="1"
+                value="0.42"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="promotionThresholdValue"
+                min="0"
+                max="1"
+                value="0.42"
+                step="0.001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="coarseFeedback">Coarse Feedback</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="coarseFeedback"
+                min="0"
+                max="1"
+                value="0.28"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="coarseFeedbackValue"
+                min="0"
+                max="1"
+                value="0.28"
+                step="0.001"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h3>Tension Field</h3>
+
+          <div class="control-item">
+            <label for="innerRadius">Inner Radius</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="innerRadius"
+                min="1"
+                max="10"
+                value="3.5"
+                step="0.01"
+              />
+              <input
+                type="number"
+                id="innerRadiusValue"
+                min="1"
+                max="10"
+                value="3.5"
+                step="0.01"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="innerStrength">Inner Strength</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="innerStrength"
+                min="0"
+                max="2"
+                value="0.9"
+                step="0.01"
+              />
+              <input
+                type="number"
+                id="innerStrengthValue"
+                min="0"
+                max="2"
+                value="0.9"
+                step="0.01"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="outerRadius">Outer Radius</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="outerRadius"
+                min="5"
+                max="15"
+                value="7.5"
+                step="0.01"
+              />
+              <input
+                type="number"
+                id="outerRadiusValue"
+                min="5"
+                max="15"
+                value="7.5"
+                step="0.01"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="outerStrength">Outer Strength</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="outerStrength"
+                min="-2"
+                max="0"
+                value="-0.4"
+                step="0.01"
+              />
+              <input
+                type="number"
+                id="outerStrengthValue"
+                min="-2"
+                max="0"
+                value="-0.4"
+                step="0.01"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h3>Energy Economy</h3>
+
+          <div class="control-item">
+            <label for="decayRate">Decay Rate</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="decayRate"
+                min="0"
+                max="1"
+                value="0.378"
+                step="0.0001"
+              />
+              <input
+                type="number"
+                id="decayRateValue"
+                min="0"
+                max="1"
+                value="0.378"
+                step="0.0001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="diffusionRate">Diffusion Rate</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="diffusionRate"
+                min="0"
+                max="1"
+                value="0.333"
+                step="0.0001"
+              />
+              <input
+                type="number"
+                id="diffusionRateValue"
+                min="0"
+                max="1"
+                value="0.333"
+                step="0.0001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="fissionThreshold">Fission Threshold</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="fissionThreshold"
+                min="0.5"
+                max="0.95"
+                value="0.796"
+                step="0.01"
+              />
+              <input
+                type="number"
+                id="fissionThresholdValue"
+                min="0.5"
+                max="0.95"
+                value="0.796"
+                step="0.01"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h3>Growth Window</h3>
+
+          <div class="control-item">
+            <label for="growthCenter">Growth Center</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="growthCenter"
+                min="-2"
+                max="2"
+                value="-0.170"
+                step="0.0001"
+              />
+              <input
+                type="number"
+                id="growthCenterValue"
+                min="-2"
+                max="2"
+                value="-0.170"
+                step="0.0001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="growthWidth">Growth Width</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="growthWidth"
+                min="0.0001"
+                max="1"
+                value="0.0183"
+                step="0.0001"
+              />
+              <input
+                type="number"
+                id="growthWidthValue"
+                min="0.0001"
+                max="1"
+                value="0.0183"
+                step="0.0001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="growthRate">Growth Rate</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="growthRate"
+                min="0.001"
+                max="1"
+                value="0.607"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="growthRateValue"
+                min="0.001"
+                max="1"
+                value="0.607"
+                step="0.001"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group" id="terrainGroup">
+          <h3>Legacy Terrain</h3>
+
+          <div class="control-item">
+            <label for="extendedModeToggle">Terrain Feedback</label>
+            <div class="slider-container" style="grid-template-columns: 26px minmax(0, 1fr);">
+              <input type="checkbox" id="extendedModeToggle" checked />
+              <span class="toggle-note">
+                R가 지나가면 G를 깎고 퍼뜨린다.
+              </span>
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="erosionThreshold">Erosion Threshold</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="erosionThreshold"
+                min="0"
+                max="1"
+                value="0.8"
+                step="0.01"
+              />
+              <input
+                type="number"
+                id="erosionThresholdValue"
+                min="0"
+                max="1"
+                value="0.8"
+                step="0.01"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="erosionRate">Erosion Rate</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="erosionRate"
+                min="0"
+                max="0.2"
+                value="0.139"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="erosionRateValue"
+                min="0"
+                max="0.2"
+                value="0.139"
+                step="0.001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="terrainDiffusion">Terrain Diffusion</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="terrainDiffusion"
+                min="0"
+                max="1"
+                value="0.62"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="terrainDiffusionValue"
+                min="0"
+                max="1"
+                value="0.62"
+                step="0.001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="overflowCap">Overflow Cap</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="overflowCap"
+                min="0"
+                max="0.5"
+                value="0.2"
+                step="0.01"
+              />
+              <input
+                type="number"
+                id="overflowCapValue"
+                min="0"
+                max="0.5"
+                value="0.2"
+                step="0.01"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="overflowLeak">Overflow Leak</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="overflowLeak"
+                min="0"
+                max="0.2"
+                value="0.05"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="overflowLeakValue"
+                min="0"
+                max="0.2"
+                value="0.05"
+                step="0.001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="overflowNoise">Overflow Noise</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="overflowNoise"
+                min="0"
+                max="0.5"
+                value="0.1"
+                step="0.01"
+              />
+              <input
+                type="number"
+                id="overflowNoiseValue"
+                min="0"
+                max="0.5"
+                value="0.1"
+                step="0.01"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="terrainCostCoef">Terrain Cost</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="terrainCostCoef"
+                min="0"
+                max="0.5"
+                value="0.1"
+                step="0.01"
+              />
+              <input
+                type="number"
+                id="terrainCostCoefValue"
+                min="0"
+                max="0.5"
+                value="0.0"
+                step="0.01"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="terrainRepelCoef">Terrain Repel</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="terrainRepelCoef"
+                min="0"
+                max="0.5"
+                value="0.03"
+                step="0.01"
+              />
+              <input
+                type="number"
+                id="terrainRepelCoefValue"
+                min="0"
+                max="0.5"
+                value="0.03"
+                step="0.01"
+              />
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="stage-shell">
+        <div id="info">
+          <div class="status-copy">
+            <strong>Hierarchy Field</strong>
+            <span>Energy / Unitness / Echo</span>
+          </div>
+
+          <div class="status-meters">
+            <div class="status-pill">
+              <label>FPS</label>
+              <span id="fps">0</span>
+            </div>
+            <div class="status-pill">
+              <label>Average</label>
+              <span id="avgEnergy">0.000</span>
+            </div>
+          </div>
+
+          <div class="speed-controls">
+            <button class="toolbar-btn" id="toggleChart">Chart</button>
+            <b>Speed</b>
+            <button class="speed-btn" data-speed="0">Pause</button>
+            <button class="speed-btn active" data-speed="1">1x</button>
+            <button class="speed-btn" data-speed="2">2x</button>
+            <button class="speed-btn" data-speed="5">5x</button>
+          </div>
+        </div>
+
+        <div id="canvasContainer">
+          <canvas id="canvas"></canvas>
+          <div class="resize-handle right"></div>
+          <div class="resize-handle bottom"></div>
+          <div class="resize-handle corner"></div>
+        </div>
+
+        <div class="overlay-stack">
+          <div class="interaction-mode">
+            <span>Intervention</span>
+            <button class="mode-btn active" data-mode="energy">Seed</button>
+            <button class="mode-btn" data-mode="attract">Align</button>
+            <button class="mode-btn" data-mode="repel">Split</button>
+          </div>
+
+          <div class="recording-controls">
+            <div class="recording-status">
+              <span id="recordingStatus">⚫ Not Recording</span>
+              <span id="recordingDuration">00:00</span>
+            </div>
+
+            <div id="chart">
+              <canvas id="chartCanvas"></canvas>
+            </div>
+
+            <div class="record-actions">
+              <button class="record-btn" id="startRecording">Start</button>
+              <button class="record-btn" id="stopRecording" disabled>Stop</button>
+              <button class="record-btn" id="captureSnapshot">Snapshot</button>
+            </div>
+
+            <div class="recording-options">
+              <label>
+                Export Grid
+                <select id="gridSize">
+                  <option value="64">64×64</option>
+                  <option value="128" selected>128×128</option>
+                  <option value="256">256×256</option>
+                  <option value="512">512×512</option>
+                </select>
+              </label>
+              <label>
+                Record Interval
+                <select id="recordInterval">
+                  <option value="10" selected>Every 10 frames</option>
+                  <option value="30">Every 30 frames</option>
+                  <option value="60">Every 60 frames</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

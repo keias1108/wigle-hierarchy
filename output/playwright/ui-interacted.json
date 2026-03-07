@@ -1,0 +1,39 @@
+{
+  "closed": {
+    "canvas": {
+      "x": 490,
+      "y": 235,
+      "width": 800,
+      "height": 600
+    },
+    "recording": {
+      "x": 1167,
+      "y": 866,
+      "width": 236,
+      "height": 209
+    },
+    "overlap": false
+  },
+  "opened": {
+    "canvas": {
+      "x": 490,
+      "y": 235,
+      "width": 800,
+      "height": 600
+    },
+    "recording": {
+      "x": 1167,
+      "y": 839,
+      "width": 236,
+      "height": 236
+    },
+    "chart": {
+      "x": 1182,
+      "y": 878,
+      "width": 206,
+      "height": 92
+    },
+    "overlap": false,
+    "chartOpen": true
+  }
+}
