@@ -1,0 +1,69 @@
+{
+  "baseline": {
+    "label": "substrate_off",
+    "substrate": {
+      "asyncMix": 0,
+      "rotatedKernelMix": 0,
+      "flowCoupling": 0,
+      "flowResponse": 0,
+      "flowMemory": 0
+    },
+    "out": [
+      {
+        "width": 0.11,
+        "avg": "0.308"
+      },
+      {
+        "width": 0.08,
+        "avg": "0.263"
+      },
+      {
+        "width": 0.05,
+        "avg": "0.150"
+      },
+      {
+        "width": 0.03,
+        "avg": "0.000"
+      },
+      {
+        "width": 0.02,
+        "avg": "0.000"
+      },
+      {
+        "width": 0.0156,
+        "avg": "0.000"
+      }
+    ]
+  },
+  "current": {
+    "label": "substrate_on",
+    "substrate": {},
+    "out": [
+      {
+        "width": 0.11,
+        "avg": "0.311"
+      },
+      {
+        "width": 0.08,
+        "avg": "0.253"
+      },
+      {
+        "width": 0.05,
+        "avg": "0.031"
+      },
+      {
+        "width": 0.03,
+        "avg": "0.000"
+      },
+      {
+        "width": 0.02,
+        "avg": "0.000"
+      },
+      {
+        "width": 0.0156,
+        "avg": "0.000"
+      }
+    ]
+  },
+  "errors": []
+}

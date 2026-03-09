@@ -26,15 +26,68 @@ export function seedPattern(texture, dynamicsMode = 0) {
       data[i] = value; // Red channel = energy
       data[i + 1] = Math.random() * 0.02; // Green channel = unit memory
       data[i + 2] = 0.0; // Blue channel = coarse echo
-      data[i + 3] = 1.0;
+      data[i + 3] = value; // Alpha channel = previous-frame energy trace
       continue;
     }
 
     data[i] = value; // Red channel = energy
     data[i + 1] = 0.5; // Green channel = terrain height
     data[i + 2] = 0.0; // Blue channel = lifted divergence storage
-    data[i + 3] = 1.0;
+    data[i + 3] = value; // Alpha channel = previous-frame energy trace
   }
+}
+
+/**
+ * Seeds the slower phylogenetic trait field.
+ *
+ * RGB stores lineage mixture weights, A stores niche memory.
+ *
+ * @param {THREE.DataTexture} texture - Target texture to seed
+ */
+export function seedTraitPattern(texture) {
+  const data = texture.image.data;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const driftA = (Math.random() - 0.5) * 0.03;
+    const driftB = (Math.random() - 0.5) * 0.03;
+    const driftC = (Math.random() - 0.5) * 0.03;
+
+    let separator = 0.34 + driftA;
+    let laminar = 0.33 + driftB;
+    let branching = 0.33 + driftC;
+
+    separator = Math.max(0.05, separator);
+    laminar = Math.max(0.05, laminar);
+    branching = Math.max(0.05, branching);
+
+    const sum = separator + laminar + branching;
+    data[i] = separator / sum;
+    data[i + 1] = laminar / sum;
+    data[i + 2] = branching / sum;
+    data[i + 3] = 0.0; // niche memory starts empty
+  }
+
+  texture.needsUpdate = true;
+}
+
+/**
+ * Seeds the continuous flow field.
+ *
+ * RG stores subpixel drift, B stores speed memory, A stores curvature memory.
+ *
+ * @param {THREE.DataTexture} texture - Target texture to seed
+ */
+export function seedFlowPattern(texture) {
+  const data = texture.image.data;
+
+  for (let i = 0; i < data.length; i += 4) {
+    data[i] = (Math.random() - 0.5) * 0.004;
+    data[i + 1] = (Math.random() - 0.5) * 0.004;
+    data[i + 2] = 0.0;
+    data[i + 3] = 0.0;
+  }
+
+  texture.needsUpdate = true;
 }
 
 /**

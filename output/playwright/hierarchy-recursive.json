@@ -1,0 +1,16 @@
+{
+  "data": {
+    "fps": "0.6",
+    "avg": "0.000",
+    "params": {
+      "hierarchyAlignment": 0.09,
+      "unitGain": 0.26,
+      "unitDecay": 0.012,
+      "promotionThreshold": 0.58,
+      "coarseFeedback": 0.17,
+      "outerStrength": -0.55,
+      "diffusionRate": 0.285
+    }
+  },
+  "errors": []
+}

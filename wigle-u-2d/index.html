@@ -693,6 +693,10 @@
               <option value="secondary">Unitness</option>
               <option value="lift">Echo</option>
               <option value="abSplit">RGB Split</option>
+              <option value="phase">Phase Flip</option>
+              <option value="lineage">Lineage</option>
+              <option value="niche">Niche</option>
+              <option value="flow">Flow</option>
             </select>
           </div>
         </div>
@@ -708,7 +712,7 @@
                 id="hierarchyAlignment"
                 min="0.02"
                 max="0.5"
-                value="0.12"
+                value="0"
                 step="0.001"
               />
               <input
@@ -716,7 +720,7 @@
                 id="hierarchyAlignmentValue"
                 min="0.02"
                 max="0.5"
-                value="0.12"
+                value="0"
                 step="0.001"
               />
             </div>
@@ -796,7 +800,7 @@
                 id="coarseFeedback"
                 min="0"
                 max="1"
-                value="0.28"
+                value="0.12"
                 step="0.001"
               />
               <input
@@ -804,7 +808,191 @@
                 id="coarseFeedbackValue"
                 min="0"
                 max="1"
+                value="0.12"
+                step="0.001"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h3>Phylogeny</h3>
+
+          <div class="control-item">
+            <label for="lineagePressure">Lineage Pressure</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="lineagePressure"
+                min="0"
+                max="1"
+                value="0.24"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="lineagePressureValue"
+                min="0"
+                max="1"
+                value="0.24"
+                step="0.001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="traitMutation">Trait Mutation</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="traitMutation"
+                min="0"
+                max="0.5"
+                value="0.11"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="traitMutationValue"
+                min="0"
+                max="0.5"
+                value="0.11"
+                step="0.001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="nicheMemory">Niche Memory</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="nicheMemory"
+                min="0.9"
+                max="0.999"
+                value="0.985"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="nicheMemoryValue"
+                min="0.9"
+                max="0.999"
+                value="0.985"
+                step="0.001"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h3>Substrate</h3>
+
+          <div class="control-item">
+            <label for="asyncMix">Async Mix</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="asyncMix"
+                min="0"
+                max="1"
                 value="0.28"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="asyncMixValue"
+                min="0"
+                max="1"
+                value="0.28"
+                step="0.001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="rotatedKernelMix">Rotated Kernel</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="rotatedKernelMix"
+                min="0"
+                max="1"
+                value="0"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="rotatedKernelMixValue"
+                min="0"
+                max="1"
+                value="0"
+                step="0.001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="flowCoupling">Flow Coupling</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="flowCoupling"
+                min="0"
+                max="1"
+                value="0"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="flowCouplingValue"
+                min="0"
+                max="1"
+                value="0"
+                step="0.001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="flowMemory">Flow Memory</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="flowMemory"
+                min="0"
+                max="0.999"
+                value="0"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="flowMemoryValue"
+                min="0"
+                max="0.999"
+                value="0"
+                step="0.001"
+              />
+            </div>
+          </div>
+
+          <div class="control-item">
+            <label for="flowResponse">Flow Response</label>
+            <div class="slider-container">
+              <input
+                type="range"
+                id="flowResponse"
+                min="0"
+                max="1"
+                value="0"
+                step="0.001"
+              />
+              <input
+                type="number"
+                id="flowResponseValue"
+                min="0"
+                max="1"
+                value="0"
                 step="0.001"
               />
             </div>

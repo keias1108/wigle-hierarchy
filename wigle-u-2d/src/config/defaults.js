@@ -27,7 +27,7 @@ export const DEFAULT_PARAMS = {
   innerRadius: 3.5,
   innerStrength: 0.9,
   outerRadius: 7.5,
-  outerStrength: -0.4,
+  outerStrength: -0.55,
 
   // Growth Function: controls energy gain/loss based on neighbors
   growthCenter: -0.17,
@@ -39,7 +39,7 @@ export const DEFAULT_PARAMS = {
 
   // Energy Economy: controls energy lifecycle
   decayRate: 0.378,
-  diffusionRate: 0.333,
+  diffusionRate: 0.285,
   fissionThreshold: 0.796,
   instabilityFactor: 1.5,
 
@@ -47,11 +47,19 @@ export const DEFAULT_PARAMS = {
   dynamicsMode: 1,
 
   // Hierarchy mode: difference -> alignment -> unit -> echo
-  hierarchyAlignment: 0.12,
-  unitGain: 0.22,
-  unitDecay: 0.018,
-  promotionThreshold: 0.42,
-  coarseFeedback: 0.28,
+  hierarchyAlignment: 0.09,
+  unitGain: 0.26,
+  unitDecay: 0.012,
+  promotionThreshold: 0.58,
+  coarseFeedback: 0.17,
+  lineagePressure: 0.24,
+  traitMutation: 0.11,
+  nicheMemory: 0.985,
+  asyncMix: 0.0,
+  rotatedKernelMix: 0.0,
+  flowCoupling: 0.0,
+  flowMemory: 0.0,
+  flowResponse: 0.0,
 
   // Terrain (G) erosion/transport (always on)
   extendedMode: 1, // reuse toggle: 1 = terrain 활성, 0 = 비활성
@@ -86,6 +94,14 @@ export const PARAM_CONTROL_IDS = [
   'unitDecay',
   'promotionThreshold',
   'coarseFeedback',
+  'lineagePressure',
+  'traitMutation',
+  'nicheMemory',
+  'asyncMix',
+  'rotatedKernelMix',
+  'flowCoupling',
+  'flowMemory',
+  'flowResponse',
   // Terrain controls live under Energy section
   'erosionThreshold',
   'erosionRate',

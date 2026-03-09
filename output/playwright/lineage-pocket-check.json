@@ -1,0 +1,21 @@
+{
+  "composite": {
+    "layer": "composite",
+    "avg": "0.003",
+    "fps": "6.2",
+    "growthWidth": 0.05
+  },
+  "lineage": {
+    "layer": "lineage",
+    "avg": "0.000",
+    "fps": "5.4",
+    "growthWidth": 0.05
+  },
+  "niche": {
+    "layer": "niche",
+    "avg": "0.000",
+    "fps": "5.8",
+    "growthWidth": 0.05
+  },
+  "errors": []
+}

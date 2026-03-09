@@ -1,0 +1,27 @@
+{
+  "lineage": {
+    "selected": "lineage",
+    "viewMode": 6,
+    "fps": "3.0",
+    "avg": "0.000"
+  },
+  "niche": {
+    "selected": "niche",
+    "viewMode": 7,
+    "fps": "4.8",
+    "avg": "0.000"
+  },
+  "flow": {
+    "selected": "flow",
+    "viewMode": 8,
+    "fps": "4.8",
+    "avg": "0.000"
+  },
+  "final": {
+    "selected": "flow",
+    "viewMode": 8,
+    "fps": "4.8",
+    "avg": "0.000"
+  },
+  "errors": []
+}

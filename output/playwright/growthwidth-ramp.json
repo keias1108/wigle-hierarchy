@@ -1,0 +1,53 @@
+{
+  "samples": [
+    {
+      "targetGrowthWidth": 0.11,
+      "actualGrowthWidth": 0.11,
+      "avg": "0.318",
+      "fps": "4.8",
+      "view": "composite"
+    },
+    {
+      "targetGrowthWidth": 0.08,
+      "actualGrowthWidth": 0.08,
+      "avg": "0.273",
+      "fps": "4.8",
+      "view": "composite"
+    },
+    {
+      "targetGrowthWidth": 0.05,
+      "actualGrowthWidth": 0.05,
+      "avg": "0.043",
+      "fps": "4.9",
+      "view": "composite"
+    },
+    {
+      "targetGrowthWidth": 0.03,
+      "actualGrowthWidth": 0.03,
+      "avg": "0.000",
+      "fps": "4.9",
+      "view": "composite"
+    },
+    {
+      "targetGrowthWidth": 0.02,
+      "actualGrowthWidth": 0.02,
+      "avg": "0.000",
+      "fps": "4.9",
+      "view": "composite"
+    },
+    {
+      "targetGrowthWidth": 0.0156,
+      "actualGrowthWidth": 0.0156,
+      "avg": "0.000",
+      "fps": "5.0",
+      "view": "composite"
+    }
+  ],
+  "final": {
+    "growthWidth": 0.0156,
+    "avg": "0.000",
+    "fps": "5.2",
+    "view": "composite"
+  },
+  "errors": []
+}

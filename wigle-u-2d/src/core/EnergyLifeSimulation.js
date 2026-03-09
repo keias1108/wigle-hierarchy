@@ -20,12 +20,16 @@ import {
 } from '../config/constants.js';
 import {
   getLifecycleShader,
+  getTraitShader,
+  getFlowShader,
   getDisplayVertexShader,
   getDisplayFragmentShader,
   getDownsampleFragmentShader,
 } from '../utils/shaderLoader.js';
 import {
   seedPattern,
+  seedTraitPattern,
+  seedFlowPattern,
   clearTexture,
   updateInteractionTexture,
 } from '../utils/textureUtils.js';
@@ -89,7 +93,8 @@ export class EnergyLifeSimulation {
     this.mousePos = { x: 0, y: 0 };
     this.extendedMode = this.params.extendedMode > 0 ? 1 : 0;
     this.dynamicsMode = this.params.dynamicsMode ?? 0;
-    this.viewMode = 0; // 0=composite, 1=primary, 2=secondary, 3=lift, 4=abSplit
+    this.viewMode = 0; // 0=composite, 1=primary, 2=secondary, 3=lift, 4=abSplit, 5=phase, 6=lineage, 7=niche, 8=flow
+    this.simulationStep = 0;
 
     this.chartHistory = [];
     this.chartEnabled = false; // Chart toggle state
@@ -136,8 +141,13 @@ export class EnergyLifeSimulation {
 
     if (!this.isPaused && this.speedMultiplier > 0) {
       for (let i = 0; i < this.speedMultiplier; i++) {
+        if (this.computeVariables.field?.material?.uniforms?.framePhase) {
+          this.computeVariables.field.material.uniforms.framePhase.value =
+            this.simulationStep % 4;
+        }
         this.computeRenderer.compute();
         this.computeFrameCounter++;
+        this.simulationStep++;
       }
 
       this.#updateInteractionTexture();
@@ -181,6 +191,18 @@ export class EnergyLifeSimulation {
       }
 
       this.material.uniforms.fieldTexture.value = currentRenderTarget.texture;
+      if (this.computeVariables.trait && this.material.uniforms.traitTexture) {
+        this.material.uniforms.traitTexture.value =
+          this.computeRenderer.getCurrentRenderTarget(
+            this.computeVariables.trait,
+          ).texture;
+      }
+      if (this.computeVariables.flow && this.material.uniforms.flowTexture) {
+        this.material.uniforms.flowTexture.value =
+          this.computeRenderer.getCurrentRenderTarget(
+            this.computeVariables.flow,
+          ).texture;
+      }
       if (this.material.uniforms.dynamicsMode) {
         this.material.uniforms.dynamicsMode.value = this.dynamicsMode;
       }
@@ -277,7 +299,11 @@ export class EnergyLifeSimulation {
     );
 
     const initialTexture = this.computeRenderer.createTexture();
+    const initialTraitTexture = this.computeRenderer.createTexture();
+    const initialFlowTexture = this.computeRenderer.createTexture();
     seedPattern(initialTexture, this.dynamicsMode);
+    seedTraitPattern(initialTraitTexture);
+    seedFlowPattern(initialFlowTexture);
 
     this.interactionTexture = this.computeRenderer.createTexture();
     clearTexture(this.interactionTexture);
@@ -286,6 +312,16 @@ export class EnergyLifeSimulation {
       'field',
       getLifecycleShader(),
       initialTexture,
+    );
+    const traitVariable = this.computeRenderer.addVariable(
+      'trait',
+      getTraitShader(),
+      initialTraitTexture,
+    );
+    const flowVariable = this.computeRenderer.addVariable(
+      'flow',
+      getFlowShader(),
+      initialFlowTexture,
     );
 
     fieldVariable.material.uniforms = {
@@ -318,6 +354,39 @@ export class EnergyLifeSimulation {
       unitDecay: { value: this.params.unitDecay },
       promotionThreshold: { value: this.params.promotionThreshold },
       coarseFeedback: { value: this.params.coarseFeedback },
+      lineagePressure: { value: this.params.lineagePressure },
+      traitMutation: { value: this.params.traitMutation },
+      nicheMemory: { value: this.params.nicheMemory },
+      asyncMix: { value: this.params.asyncMix },
+      rotatedKernelMix: { value: this.params.rotatedKernelMix },
+      flowCoupling: { value: this.params.flowCoupling },
+      flowMemory: { value: this.params.flowMemory },
+      flowResponse: { value: this.params.flowResponse },
+      framePhase: { value: 0 },
+      texelSize: {
+        value: new THREE.Vector2(1.0 / this.simulationSize, 1.0 / this.simulationSize),
+      },
+    };
+
+    traitVariable.material.uniforms = {
+      dynamicsMode: { value: this.dynamicsMode },
+      hierarchyAlignment: { value: this.params.hierarchyAlignment },
+      coarseFeedback: { value: this.params.coarseFeedback },
+      lineagePressure: { value: this.params.lineagePressure },
+      traitMutation: { value: this.params.traitMutation },
+      nicheMemory: { value: this.params.nicheMemory },
+      flowCoupling: { value: this.params.flowCoupling },
+      texelSize: {
+        value: new THREE.Vector2(1.0 / this.simulationSize, 1.0 / this.simulationSize),
+      },
+    };
+
+    flowVariable.material.uniforms = {
+      dynamicsMode: { value: this.dynamicsMode },
+      flowMemory: { value: this.params.flowMemory },
+      flowResponse: { value: this.params.flowResponse },
+      flowCoupling: { value: this.params.flowCoupling },
+      lineagePressure: { value: this.params.lineagePressure },
       texelSize: {
         value: new THREE.Vector2(1.0 / this.simulationSize, 1.0 / this.simulationSize),
       },
@@ -325,8 +394,22 @@ export class EnergyLifeSimulation {
 
     this.computeRenderer.setVariableDependencies(fieldVariable, [
       fieldVariable,
+      traitVariable,
+      flowVariable,
+    ]);
+    this.computeRenderer.setVariableDependencies(traitVariable, [
+      fieldVariable,
+      traitVariable,
+      flowVariable,
+    ]);
+    this.computeRenderer.setVariableDependencies(flowVariable, [
+      fieldVariable,
+      traitVariable,
+      flowVariable,
     ]);
     this.computeVariables.field = fieldVariable;
+    this.computeVariables.trait = traitVariable;
+    this.computeVariables.flow = flowVariable;
 
     const error = this.computeRenderer.init();
     if (error !== null) {
@@ -339,6 +422,8 @@ export class EnergyLifeSimulation {
     this.material = new THREE.ShaderMaterial({
       uniforms: {
         fieldTexture: { value: null },
+        traitTexture: { value: null },
+        flowTexture: { value: null },
         viewMode: { value: this.viewMode },
         dynamicsMode: { value: this.dynamicsMode },
       },
@@ -371,6 +456,12 @@ export class EnergyLifeSimulation {
 
         if (this.computeVariables.field?.material?.uniforms[param]) {
           this.computeVariables.field.material.uniforms[param].value = numeric;
+        }
+        if (this.computeVariables.trait?.material?.uniforms[param]) {
+          this.computeVariables.trait.material.uniforms[param].value = numeric;
+        }
+        if (this.computeVariables.flow?.material?.uniforms[param]) {
+          this.computeVariables.flow.material.uniforms[param].value = numeric;
         }
       };
 
@@ -557,6 +648,10 @@ export class EnergyLifeSimulation {
           secondary: 2,
           lift: 3,
           abSplit: 4,
+          phase: 5,
+          lineage: 6,
+          niche: 7,
+          flow: 8,
         };
         this.viewMode = modeMap[e.target.value] ?? 0;
         if (this.material?.uniforms?.viewMode) {
@@ -918,6 +1013,14 @@ export class EnergyLifeSimulation {
       this.computeVariables.field.material.uniforms.dynamicsMode.value = this.dynamicsMode;
     }
 
+    if (this.computeVariables.trait?.material?.uniforms?.dynamicsMode) {
+      this.computeVariables.trait.material.uniforms.dynamicsMode.value = this.dynamicsMode;
+    }
+
+    if (this.computeVariables.flow?.material?.uniforms?.dynamicsMode) {
+      this.computeVariables.flow.material.uniforms.dynamicsMode.value = this.dynamicsMode;
+    }
+
     if (this.material?.uniforms?.dynamicsMode) {
       this.material.uniforms.dynamicsMode.value = this.dynamicsMode;
     }
@@ -942,8 +1045,8 @@ export class EnergyLifeSimulation {
 
     if (this.dom.layerSelect) {
       const labels = {
-        terrain: ['Composite', 'Energy', 'Terrain', 'Lift', 'Channel Split'],
-        hierarchy: ['Composite', 'Energy', 'Unitness', 'Echo', 'RGB Split'],
+        terrain: ['Composite', 'Energy', 'Terrain', 'Lift', 'Channel Split', 'Phase Flip', 'Lineage', 'Niche', 'Flow'],
+        hierarchy: ['Composite', 'Energy', 'Unitness', 'Echo', 'RGB Split', 'Phase Flip', 'Lineage', 'Niche', 'Flow'],
       };
       const modeKey = this.#getDynamicsModeKey(this.dynamicsMode);
       const current = labels[modeKey];
@@ -953,6 +1056,10 @@ export class EnergyLifeSimulation {
       if (options[2]) options[2].textContent = current[2];
       if (options[3]) options[3].textContent = current[3];
       if (options[4]) options[4].textContent = current[4];
+      if (options[5]) options[5].textContent = current[5];
+      if (options[6]) options[6].textContent = current[6];
+      if (options[7]) options[7].textContent = current[7];
+      if (options[8]) options[8].textContent = current[8];
     }
 
     if (this.dom.terrainGroup) {
@@ -976,6 +1083,12 @@ export class EnergyLifeSimulation {
       if (input) input.value = loaded[key];
       if (this.computeVariables.field?.material?.uniforms[key]) {
         this.computeVariables.field.material.uniforms[key].value = loaded[key];
+      }
+      if (this.computeVariables.trait?.material?.uniforms[key]) {
+        this.computeVariables.trait.material.uniforms[key].value = loaded[key];
+      }
+      if (this.computeVariables.flow?.material?.uniforms[key]) {
+        this.computeVariables.flow.material.uniforms[key].value = loaded[key];
       }
       if (key === 'dynamicsMode') {
         reinitializeNeeded = true;
@@ -1072,6 +1185,7 @@ export class EnergyLifeSimulation {
 
     this.computeVariables = {};
     this.#disposeDownsamplePipeline();
+    this.simulationStep = 0;
 
     // Clear chart history
     this.chartHistory = [];

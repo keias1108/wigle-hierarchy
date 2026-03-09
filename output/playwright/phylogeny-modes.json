@@ -1,0 +1,14 @@
+{
+  "lineage": {
+    "selected": "lineage",
+    "viewMode": 6,
+    "lineagePressure": 0.24,
+    "traitMutation": 0.11,
+    "nicheMemory": 0.985
+  },
+  "niche": {
+    "selected": "niche",
+    "viewMode": 7
+  },
+  "errors": []
+}
